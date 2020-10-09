@@ -1,14 +1,15 @@
 workspace "DOGE DEV"
-	language "C++"
 	architecture "x64"
 	configurations { "Debug", "Release" }
+	
+	startproject "Game"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-project DOGE
+project "DOGE"
 	location "DOGE"
 	kind "StaticLib"
-	cppdialect "17"
+	language "C++"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -24,18 +25,30 @@ project DOGE
 		"%{prj.name}/src",
 	}
 
+	filter "system:windows"
+		cppdialect "C++17"
+		staticruntime "On"
+		systemversion "10.0.18362.0"
+
+		defines
+		{
+			"DOGE_WINDOWS"
+		}
+
 	filter "configurations:Debug"
-		defines { "DEBUG" }
+		defines "DOGE_DEBUG"
+		runtime "Debug"
 		symbols "On"
 	
 	filter "configurations:Release"
-		defines { "RELEASE" }
+		defines "DOGE_RELEASE"
+		runtime "Release"
 		symbols "On"
 
 project "Game"
-	location "Game"
-	language "C++17"
 	kind "ConsoleApp"
+	location "Game"
+	language "C++"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -52,12 +65,29 @@ project "Game"
 		"DOGE/src",
 	}
 
+	links
+	{
+		"DOGE",
+	}
+
+	filter "system:windows"
+		cppdialect "C++17"
+		staticruntime "On"
+		systemversion "10.0.18362.0"
+
+		defines
+		{
+			"DOGE_WINDOWS"
+		}
+
 	filter "configurations:Debug"
-		defines { "DEBUG" }
+		defines "Game_DEBUG"
+		runtime "Debug"
 		symbols "On"
 	
 	filter "configurations:Release"
-		defines { "RELEASE" }
+		defines "Game_RELEASE"
+		runtime "Release"
 		symbols "On"
 
 
