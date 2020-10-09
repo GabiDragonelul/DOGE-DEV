@@ -1,0 +1,2 @@
+C:\Users\Cosmina\Desktop\DOGE DEV\bin\DOGE\DOGE.pdb
+C:\Users\Cosmina\Desktop\DOGE DEV\bin-int\DOGE\DOGE.pdb
