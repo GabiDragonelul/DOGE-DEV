@@ -3,30 +3,54 @@
 
 namespace DOGE
 {
-	enum EventTypes
+	enum EventType
 	{
-		MousePressedEvent, MouseReleasedEvent, MouseRepeatedEvent,
-		KeyPressedEvent, KeyReleasedEvent, KeyRepeatedEvent, 
-		MouseMovedEvent, 
+		None = 0,
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+		KeyPressed, KeyReleased,
+		WindowClosed, WindowResized,
+	};
+
+	enum EventCategory
+	{
+		ApplicationEvent,
+		WindowEvent,
+		InputEvent,
 	};
 
 	class Event
 	{
 	public:
-		virtual std::string GetName() const = 0;
-		virtual EventTypes GetType() const = 0;
-
-
-	};
-
-	class EventHandler
-	{
-	protected:
-		using EventHandlerFunction = std::function<bool(Event&)>;
+		virtual const char* GetName() const = 0;
+		virtual EventType GetType() const = 0;
+		std::string ToString() const { return GetName(); }
 	private:
-		void Dispatch(const Event& e)
-		{
-
-		}
+		EventCategory m_Category;
 	};
+
+	class EventDispatcher
+	{
+	private:
+		template  <typename T>
+		using EventFn = std::function<bool(T&)>;
+	public:
+		EventDispatcher(Event& e)
+			:e(e){}
+
+		template  <typename T>
+		bool Dispatch(const EventFn<T>& fn)
+		{
+			if (e.GetType() == T::GetStaticType())
+				return true;
+			return false;
+			//TODO continue
+		}
+	private:
+		Event& e;
+	};
+
+	std::ostream& operator<<(std::ostream& os, const Event& e)
+	{
+		os << e.GetName() << std::endl;
+	}
 }

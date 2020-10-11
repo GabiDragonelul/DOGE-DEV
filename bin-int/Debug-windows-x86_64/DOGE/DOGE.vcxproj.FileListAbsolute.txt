@@ -1,0 +1,2 @@
+C:\Users\Gabi\source\repos\DOGE-DEV\bin\Debug-windows-x86_64\DOGE\DOGE.pdb
+C:\Users\Gabi\source\repos\DOGE-DEV\bin-int\Debug-windows-x86_64\DOGE\DOGE.pdb
