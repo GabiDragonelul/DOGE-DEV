@@ -1,6 +1,7 @@
 #include "pchDOGE.h"
 
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "Window.h"
 #include "Events/MouseEvent.h"
@@ -9,6 +10,11 @@
 
 namespace DOGE
 {
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
+
 	Window::Window(unsigned int width, unsigned int height, std::string_view title)
 		:m_Window(nullptr)
 	{
@@ -18,6 +24,7 @@ namespace DOGE
 	Window::~Window()
 	{
 		glfwDestroyWindow(m_Window);
+		glfwTerminate();
 	}
 
 	void Window::OnUpdate()
@@ -33,6 +40,14 @@ namespace DOGE
 		m_Data.Height = height;
 		m_Data.Title = title;
 
+		glfwWindowHint(
+			GLFW_OPENGL_PROFILE,
+			GLFW_OPENGL_CORE_PROFILE
+		);
+
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+
 		m_Window = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title.c_str(), NULL, NULL);
 
 		if (!m_Window)
@@ -41,8 +56,21 @@ namespace DOGE
 			return -1;
 		}
 
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
+		glfwSwapInterval(1);
+
+		
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			DOGE_CORE_ASSERT(0, "Failed to initialized GLAD!");
+			return -1;
+		}
+
+		glViewport(0, 0, 1280, 720);
 
 		glfwSetCursorPosCallback(this->m_Window, [](GLFWwindow* window, double xpos, double ypos) {
 			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
