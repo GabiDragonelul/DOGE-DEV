@@ -8,8 +8,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDirs = {}
 IncludeDirs["GLFW"] = "DOGE/vendor/GLFW/include"
+IncludeDirs["Glad"] = "DOGE/vendor/Glad/include"
+IncludeDirs["ImGui"] = "DOGE/vendor/ImGui/include"
 
 include "DOGE/vendor/GLFW"
+include "DOGE/vendor/Glad"
+include "DOGE/vendor/ImGui"
 
 project "DOGE"
 	location "DOGE"
@@ -33,9 +37,10 @@ project "DOGE"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/GLFW/include",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDirs.GLFW}",
+		"%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.Glad}",
 	}
 
 	filter "system:windows"
@@ -45,13 +50,15 @@ project "DOGE"
 
 		defines
 		{
-			"DOGE_WINDOWS"
+			"DOGE_PLATFORM_WINDOWS"
 		}
 
 	links
 	{
 		"GLFW",
 		"opengl32.lib",
+		"Glad",
+		"ImGui",
 	}
 
 	filter "configurations:Debug"
@@ -81,6 +88,7 @@ project "Game"
 	includedirs
 	{
 		"%{prj.name}/src",
+		"DOGE/vendor/spdlog/include",
 		"DOGE/src",
 	}
 

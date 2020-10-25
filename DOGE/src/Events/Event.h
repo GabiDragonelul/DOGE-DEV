@@ -7,50 +7,55 @@ namespace DOGE
 	{
 		None = 0,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		KeyPressed, KeyReleased,
+		KeyPressed, KeyReleased, Char,
 		WindowClosed, WindowResized,
-	};
-
-	enum EventCategory
-	{
-		ApplicationEvent,
-		WindowEvent,
-		InputEvent,
 	};
 
 	class Event
 	{
 	public:
+		bool Handled;
+
 		virtual const char* GetName() const = 0;
 		virtual EventType GetType() const = 0;
-		std::string ToString() const { return GetName(); }
-	private:
-		EventCategory m_Category;
+		virtual std::string ToString() const { return GetName(); }
+
+#define EVENT_SETUP(type)\
+		virtual const char* GetName() const override { return #type; }; \
+		virtual EventType GetType() const override   { return type; };\
+		static EventType GetStaticType() { return type; }
+
+#define ABSTRACT_EVENT_SETUP()\
+		virtual const char* GetName() const override = 0; \
+		virtual EventType GetType() const override = 0;
 	};
 
 	class EventDispatcher
 	{
-	private:
-		template  <typename T>
-		using EventFn = std::function<bool(T&)>;
 	public:
-		EventDispatcher(Event& e)
-			:e(e){}
-
-		template  <typename T>
-		bool Dispatch(const EventFn<T>& fn)
+		EventDispatcher(Event& event)
+			: m_Event(event)
 		{
-			if (e.GetType() == T::GetStaticType())
+		}
+
+		// F will be deduced by the compiler
+		template<typename T, typename F>
+		bool Dispatch(const F& func)
+		{
+			if (m_Event.GetType() == T::GetStaticType())
+			{
+				m_Event.Handled |= func(static_cast<T&>(m_Event));
 				return true;
+			}
 			return false;
-			//TODO continue
 		}
 	private:
-		Event& e;
+		Event& m_Event;
 	};
 
-	std::ostream& operator<<(std::ostream& os, const Event& e)
-	{
-		os << e.GetName() << std::endl;
-	}
+	//std::ostream& operator<<(std::ostream& os, const Event& e)
+	//{
+	//	os << e.ToString() << std::endl;
+	//	return os;
+	//}
 }
